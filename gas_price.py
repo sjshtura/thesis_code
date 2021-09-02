@@ -13,4 +13,5 @@ df_data = df_data.asfreq('D')
 df_data = df_data.interpolate(method ='linear', limit_direction ='forward')
 
 gas_p = df_data
-gas_p
+print("gas price\n")
+print(gas_p.head())

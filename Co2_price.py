@@ -19,4 +19,5 @@ df_data = df_data.asfreq('D')
 df_data = df_data.interpolate(method ='linear', limit_direction ='backward')
 df_data['mean_CO2_tax'] = df_data[['Bid', 'Bid']].mean(axis=1)
 df_data = df_data[["mean_CO2_tax"]]
-df_data
+print("Co2 Price\n")
+print(df_data.head())

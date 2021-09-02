@@ -192,5 +192,7 @@ final_data.head()
 final_data_new = final_data.drop(['Day','Month', 'Gewerbe allgemein'], axis = 1)
 final_data_new.head()
 electricity_demand = final_data_new.set_index("Date")
-electricity_demand
+# electricity_demand
 # final_data.to_excel("Final_dataframe.xlsx")
+print("electricity demand\n")
+print(electricity_demand.head())

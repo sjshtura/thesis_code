@@ -23,8 +23,8 @@ df_data = df_data.drop_duplicates(['date', 'hour'])
 df_data
 heat_demand_pivot = df_data.pivot(index = 'date', columns = 'hour', values = 'heat_demand')
 heat_demand_pivot
-heat_p = heat_demand_pivot
+heat_capacity = heat_demand_pivot
 
-heat_p.loc[:] = 5.5
-print("heat price\n")
-print(heat_p.head())
+heat_capacity.loc[:] = 385
+print("maximum heat capacity\n")
+print(heat_capacity.head())

@@ -10,17 +10,14 @@ df_data
 #df.index =  pd.to_datetime(df.index, errors='ignore')
 #df
 df_data
+
 df_data = df_data[['dtDate', 'intHour','dblPrice']]
 df_data
 
 
-#df_data["intHour"] = pd.to_datetime(df_data["intHour"])
-# df_data.intHour = df_data.intHour.astype('time64[h]')
+
 df_data.intHour = pd.to_timedelta(df_data.intHour, unit='h')
 
-# df_data["intHour"] = str(df_data["intHour"].timedelta(seconds=666))
-
-# df_data['intHour'] = pd.to_datetime(df_data['intHour'], format='%H:%M:%S')
 df_data
 
 df_data.intHour = df_data.intHour.astype(str)
@@ -31,11 +28,12 @@ df_data
 # df_data.dtypes
 
 df_data.dtDate.duplicated(keep = 'last')
+
 df_data.dtypes
 
-Electricity_price_pivot1 = df_data.pivot(index = 'dtDate', columns = 'intHour', values = 'dblPrice')
-Electricity_price_pivot1
+Electricity_price_pivot0 = df_data.pivot(index = 'dtDate', columns = 'intHour', values = 'dblPrice')
 
-Electricity_price_pivot1.loc[:] = 32.05
-print("electrical price household\n")
-print(Electricity_price_pivot1.head())
+elec_eff = Electricity_price_pivot0
+elec_eff.loc[:] = 0.412
+print("electrical efficiency\n")
+print(elec_eff.head())

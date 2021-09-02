@@ -24,4 +24,5 @@ df_data
 
 heat_demand_pivot = df_data.pivot(index = 'date', columns = 'hour', values = 'heat_demand')
 heat_demand_pivot = heat_demand_pivot*1000
-heat_demand_pivot
+print("heat demand\n")
+print(heat_demand_pivot.head())

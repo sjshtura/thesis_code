@@ -32,4 +32,5 @@ df_data.dtDate.duplicated(keep = 'last')
 df_data.dtypes
 
 Electricity_price_pivot0 = df_data.pivot(index = 'dtDate', columns = 'intHour', values = 'dblPrice')
-Electricity_price_pivot0
+print("electrical price wholesale\n")
+print(Electricity_price_pivot0.head())

@@ -34,8 +34,9 @@ df_data.dtDate.duplicated(keep = 'last')
 df_data.dtypes
 
 Electricity_price_pivot1 = df_data.pivot(index = 'dtDate', columns = 'intHour', values = 'dblPrice')
-Electricity_price_pivot1
 
-Electricity_price_pivot1.loc[:] = 32.05
-print("electrical price household\n")
-print(Electricity_price_pivot1.head())
+elec_capacity = Electricity_price_pivot1
+elec_capacity.loc[:] = 400
+# elec_capacity
+print("electrical maximum capacity\n")
+print(elec_capacity.head())
