@@ -19,9 +19,11 @@ df_data = df_data.asfreq('D')
 df_data = df_data.interpolate(method ='linear', limit_direction ='backward')
 df_data['mean_CO2_tax'] = df_data[['Bid', 'Bid']].mean(axis=1)
 df_data = df_data[["mean_CO2_tax"]]
+
+df3 = df_data.iloc[[-1]].rename(lambda x: x + pd.offsets.YearBegin())
+
+
+df_data = df_data.append(df3).resample('60T').ffill().iloc[:-1]
 print("Co2 Price\n")
 print(df_data.head())
 
-x = df_data.resample('60T').ffill()
-
-print(x)

@@ -13,5 +13,11 @@ df_data = df_data.asfreq('D')
 df_data = df_data.interpolate(method ='linear', limit_direction ='forward')
 
 gas_p = df_data
+
+df3 = gas_p.iloc[[-1]].rename(lambda x: x + pd.offsets.YearBegin())
+
+
+gas_p = gas_p.append(df3).resample('60T').ffill().iloc[:-1]
+
 print("gas price\n")
 print(gas_p.head())
