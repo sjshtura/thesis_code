@@ -21,3 +21,7 @@ df_data['mean_CO2_tax'] = df_data[['Bid', 'Bid']].mean(axis=1)
 df_data = df_data[["mean_CO2_tax"]]
 print("Co2 Price\n")
 print(df_data.head())
+
+x = df_data.resample('60T').ffill()
+
+print(x)
