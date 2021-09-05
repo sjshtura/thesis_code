@@ -18,7 +18,7 @@ df_winter = df_winter.drop(df_winter.index[0])
 df_winter
 
 df_winter.index = df_winter.index.astype(str)
-df_winter.index =  pd.to_datetime(df_winter.index, errors='ignore')
+df_winter.index = pd.to_datetime(df_winter.index, errors='ignore')
 df_winter = df_winter.astype(float)
 df_winter = df_winter.resample('60T').mean()
 df_winter.index = df_winter.index.astype(str)

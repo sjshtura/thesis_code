@@ -21,8 +21,8 @@ df_data.intHour = pd.to_timedelta(df_data.intHour, unit='h')
 df_data
 
 df_data.intHour = df_data.intHour.astype(str)
-df_data["intHour"]= df_data["intHour"].str.slice(start = 7)
-df_data.intHour =  pd.to_datetime(df_data.intHour, errors='ignore', format="%H:%M:%S").dt.time
+df_data["intHour"] = df_data["intHour"].str.slice(start = 7)
+df_data.intHour = pd.to_datetime(df_data.intHour, errors='ignore', format="%H:%M:%S").dt.time
 df_data.dblPrice = df_data.dblPrice * 0.1
 df_data
 # df_data.dtypes

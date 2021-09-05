@@ -2,15 +2,15 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import datetime
 
-df_data = pd.read_excel("when2heat_DE.xlsx",sheet_name='Sheet2',usecols = "A,B,C,J",skiprows=3)
+df_data = pd.read_excel("when2heat_DE.xlsx",sheet_name='Sheet2',usecols = "A,B,D,I",skiprows=3)
 
 df_data["Unnamed: 1"]= df_data["Unnamed: 1"].str.slice(start = 11)
 df_data["unit"]= df_data["unit"].str.slice(stop = 10)
-sum_column = df_data["MW"] + df_data["MW.7"]
+sum_column = df_data["MW.1"] + df_data["MW.6"]
 df_data["heat_demand"] = sum_column
 
 
-df_data = df_data.drop(['MW','MW.7'], axis = 1)
+df_data = df_data.drop(['MW.1','MW.6'], axis = 1)
 df_data.unit =  pd.to_datetime(df_data.unit, errors='ignore')
 df_data
 
