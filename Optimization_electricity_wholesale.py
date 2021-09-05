@@ -4,10 +4,10 @@ Created on Fri Jun 11 11:02:03 2021
 
 @author: Christian
 """
-import np as np
-import numpy as nd
+
+import numpy as np
 import pandas as pd
-from mip import Model, xsum, maximize, BINARY
+from mip import Model, xsum, maximize, BINARY, CBC
 
 from Co2_price import df_data
 from electricity_demand import electricity_demand
@@ -49,12 +49,12 @@ eff_plants = elec_eff.stack().tolist()  # the efficiency of the power plants
 T = range(8784)
 I = range(1)
 
-m = Model("Maximizing profit", sense=maximize)
+m = Model("Maximizing profit", sense=maximize, solver_name=CBC)
 
 # variable
 y_t = [[m.add_var(lb=0) for i in I] for t in T]  # Electricity generation
 el_sold = [m.add_var(lb=0) for t in T]  # electricity sold
-# el_sold = [m.add_var(lb = 0) for t in T] # electricity sold 
+# el_sold = [m.add_var(lb = 0) for t in T] # electricity sold
 x_t = [[m.add_var(lb=0) for i in I] for t in T]  # Fuel consumption
 z_t = [[m.add_var(lb=0) for i in I] for t in T]  # Heat generation
 # objective function
@@ -108,10 +108,10 @@ print(type(heat_demand_norm))
 print(type(el_price))
 
 
-ls = [type(item) for item in el_price]
-print(ls)
-ls = [type(item) for item in el_price]
-print(ls)
+# ls = [type(item) for item in el_price]
+# print(ls)
+# ls = [type(item) for item in el_price]
+# print(ls)
 
 # m.objective = xsum((el_price[t] * del_t * el_sold[t]) - ( x_t[t][i] * ( gas_p[i] * del_t + (em_fc * co2_p[t]*del_t))) for t in T for i in I) + ((heat_demand[t] * heat_price[t]) for t in T)
 
@@ -120,15 +120,13 @@ print(ls)
 len(heat_price)
 
 
-m.objective = xsum(
-    (el_price[t] * del_t * el_sold[t]) - (x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t))) for t in T for i
-    in I) + ((heat_demand[t] * heat_price[t]) for t in T)
+m.objective = xsum((el_price[t] * del_t * el_sold[t]) - (x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t))) for t in T for i    in I) + xsum((heat_demand[t] * heat_price[t]) for t in T)
 
 
 
-m.objective = xsum(
-    (el_price[t] * del_t * el_sold[t]) - (x_t[t][i] * (gas_p[i] * del_t + (em_fc * co2_p[t] * del_t))) for t in T for i
-    in I) + ((heat_demand[t] * heat_price[t]) for t in T)
+#m.objective = xsum(
+#    (el_price[t] * del_t * el_sold[t]) - (x_t[t][i] * (gas_p[i] * del_t + (em_fc * co2_p[t] * del_t))) for t in T for i
+#    in I) + ((heat_demand[t] * heat_price[t]) for t in T)
 
 # constraints
 
