@@ -51,19 +51,22 @@ capacity_ht_boiler = heat_cap.stack().tolist()
 eff_boiler = heat_eff.stack().tolist()
 
 T = range(8784)
-I = range(1)
 
 J = range(1)  # J: boiler in set of boilers J
-K = range(1)  # k: CHP in set of CHP plants K
+# K = range(1)  # k: CHP in set of CHP plants K
+
+I = range(1)  # CHP
 
 m = Model("Maximizing profit", sense=maximize, solver_name=CBC)
 
 # variable
 y_t = [[m.add_var(lb=0) for i in I] for t in T]  # Electricity generation
-el_sold = [[m.add_var(lb=0) for i in I] for t in T]  # electricity sold
+el_sold = [m.add_var(lb=0) for t in T]  # electricity sold
 el_bought = [m.add_var(lb=0) for t in T]  # electricity bought
-x_t = [[m.add_var(lb=0) for i in I] for t in T]  # Fuel consumption
-z_t = [[m.add_var(lb=0) for i in I] for t in T]  # Heat generation
+x_t = [[m.add_var(lb=0) for i in I] for t in T]  # Fuel consumption by CHP
+z_t = [[m.add_var(lb=0) for i in I] for t in T]  # Heat generation by CHP
+x_tb = [[m.add_var(lb=0) for j in J] for t in T]  # Fuel consumption by Boiler
+z_tb = [[m.add_var(lb=0) for j in J] for t in T]  # Heat generation by Boiler
 # objective function
 
 # Revenue = Electricity price * demand/generation
@@ -98,23 +101,26 @@ print(type(el_price))
 
 m.objective = xsum(
     el_price[t] * del_t * (el_sold[t] - el_bought[t]) - (x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
-    for t in T for i in I) + xsum((heat_demand[t] * heat_price[t]) for t in T)
+    for i in I for t in T) - xsum((x_tb[t][j] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
+                                  for j in J for t in T) + xsum((heat_demand[t] * heat_price[t]) for t in T)
 
 # constraints
 
 for t in T:
+
+    m += heat_demand[t] <= xsum(z_t[t][i] for i in I) + xsum(z_tb[t][j] for j in J)  # heat demand >= Heat generation
+    m += xsum(y_t[t][i] for i in I) + el_bought[t] == el_sold[t] + el_demand[
+        t]  # electricity generation + bought electricity = sold electricity + electricity demand
+
     for j in J:
-        m += z_t[t][j] <= capacity_ht_boiler[j]  # heat generation <= maximum capacity of heat of the plant
-        m += x_t[t][j] == z_t[t][j] / eff_boiler[j]  # fuel consumption = Heat generation / efficiency of the plants
-    for k in K:
-        m += y_t[t][k] <= capacity_el[k]  # electricity generation <= maximum capacity of electricity of the plant
-        m += z_t[t][k] <= capacity_ht[k]  # heat generation <= maximum capacity of heat of the plant
-        m += x_t[t][k] == y_t[t][i] / eff_plants[
-            k]  # fuel consumption = Electricity generation / efficiency of the plants
-        m += y_t[t][k] == heat_ratio * z_t[t][k]  # electricity generation >= heat ratio * heat generation
+        m += z_tb[t][j] <= capacity_ht_boiler[j]  # heat generation <= maximum capacity of heat of the plant
+        m += x_tb[t][j] == z_tb[t][j] / eff_boiler[j]  # fuel consumption = Heat generation / efficiency of the plants
     for i in I:
-        m += heat_demand[t] <= z_t[t][i]  # heat demand >= Heat generation
-        m += y_t[t][i] + el_bought[t] == el_sold[t] + el_demand[t]  # electricity generation + bought electricity = sold electricity + electricity demand
+        m += y_t[t][i] <= capacity_el[i]  # electricity generation <= maximum capacity of electricity of the plant
+        m += z_t[t][i] <= capacity_ht[i]  # heat generation <= maximum capacity of heat of the plant
+        m += x_t[t][i] == y_t[t][i] / eff_plants[
+            i]  # fuel consumption = Electricity generation / efficiency of the plants
+        m += y_t[t][i] == heat_ratio * z_t[t][i]  # electricity generation >= heat ratio * heat generation
 
 status = m.optimize()
 obj = m.objective_value

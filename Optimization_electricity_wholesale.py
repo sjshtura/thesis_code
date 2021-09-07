@@ -144,7 +144,7 @@ for t in T:
 
         m += y_t[t][i] == heat_ratio * z_t[t][i]  # electricity generation = heat ratio * heat generation
 
-        m += y_t[t][i] +el_bought[t] == el_sold[t] + el_demand[t] # electricity generation = sold electricity + electricity demand
+        m += y_t[t][i] + el_bought[t] == el_sold[t] + el_demand[t] # electricity generation = sold electricity + electricity demand
 
 status = m.optimize()
 obj = m.objective_value
