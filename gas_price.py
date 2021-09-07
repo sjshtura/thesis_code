@@ -17,7 +17,9 @@ gas_p = df_data
 df3 = gas_p.iloc[[-1]].rename(lambda x: x + pd.offsets.YearBegin())
 
 
-gas_p = gas_p.append(df3).resample('60T').ffill().iloc[:-1]
+gas_p1 = gas_p.append(df3).resample('60T').ffill().iloc[:-1]
+gas_p = .1 * gas_p1
+
 
 print("gas price\n")
 print(gas_p.head())

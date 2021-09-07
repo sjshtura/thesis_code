@@ -30,7 +30,7 @@ heat_demand_1 = heat_demand_pivot
 heat_demand_1 = heat_demand_1.interpolate(method='linear', limit_direction='forward')
 heat_price_1 = heat_p
 
-el_price1 = elec_price_wholesale.interpolate(method='linear', limit_direction='forward')
+el_price1 = elec_price_household_32_05.interpolate(method='linear', limit_direction='forward')
 el_price = el_price1.stack().tolist()  # Electricity price
 del_t = 1  # duration of time step
 el_demand = electricity_demand.stack().tolist()  # Electicity demand
