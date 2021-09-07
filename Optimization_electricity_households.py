@@ -22,7 +22,7 @@ from heat_capacity import heat_capacity
 
 
 elec_demand = electricity_demand.stack().tolist()
-elec_price_wholesale = Electricity_price_pivot0
+#elec_price_wholesale = Electricity_price_pivot0
 elec_price_household_32_05 = Electricity_price_pivot1
 co2_price = df_data
 gas_price = gas_p
@@ -152,3 +152,39 @@ obj = m.objective_value
 
 status
 
+electricity_generation = []# y_t
+electricity_sold = [] # el_sold
+electricity_bought = [] # el_bought
+fuel_consumption = [] # x_t
+heat_generation = [] # z_t
+if m.num_solutions:
+    for t in T:
+        electricity_sold.append(el_sold[t].x)
+        electricity_bought.append(el_bought[t].x)
+        for i in I:
+            electricity_generation.append(y_t[t][i].x)
+            fuel_consumption.append(x_t[t][i].x)
+            heat_generation.append(z_t[t][i].x)
+
+
+import matplotlib.pyplot as plt
+plt.rcParams["figure.figsize"] = (10,5)
+xx_data = [electricity_generation[:100], electricity_sold[:100], electricity_bought[:100], fuel_consumption[:100], heat_generation[:100]]
+xx_label = ["electricity\_generation[:100]", "electricity\_sold[:100]", "electricity\_bought[:100]", "fuel\_consumption[:100]", "heat\_generation[:100]"]
+
+fig = plt.figure()
+fig.suptitle("CHP with households price")
+ax = plt.subplot(111)
+
+
+for i,j in zip(xx_data,xx_label):
+    ax.plot(i, label='$%s$'%j)
+
+# Shrink current axis by 20%
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+# Put a legend to the right of the current axis
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+plt.show()
