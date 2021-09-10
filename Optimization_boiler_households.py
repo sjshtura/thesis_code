@@ -39,7 +39,8 @@ el_demand = electricity_demand.stack().tolist()  # Electicity demand
 
 gas_pp = gas_price["Preis"].values.tolist()  # Gas price for different plants
 em_fc = 0.2  # emission factor
-co2_p = co2_price["mean_CO2_tax"].values.tolist()  # CO2 Price
+co2_p = co2_price * 0.1
+co2_p = co2_p["mean_CO2_tax"].values.tolist()  # CO2 Price
 capacity_el = elec_capacity.stack().tolist()  # maximum capacity of electricity for the power plants
 capacity_ht = heat_capacity.stack().tolist()  # maximum capacity of heat for the power plants
 heat_demand = heat_demand_1.stack().tolist()  # heat demand
@@ -47,7 +48,9 @@ heat_price = heat_price_1.stack().tolist()  # heat price
 heat_ratio = 400 / 385  # heat ratio
 eff_plants = elec_eff.stack().tolist()  # the efficiency of the power plants
 
+#heat_cap = (heat_cap*385)/20
 capacity_ht_boiler = heat_cap.stack().tolist()
+
 eff_boiler = heat_eff.stack().tolist()
 
 T = range(8784)
@@ -108,7 +111,7 @@ m.objective = xsum(
 
 for t in T:
 
-    m += heat_demand[t] <= xsum(z_t[t][i] for i in I) + xsum(z_tb[t][j] for j in J)  # heat demand <= Heat
+    m += heat_demand[t] == xsum(z_t[t][i] for i in I) + xsum(z_tb[t][j] for j in J)  # heat demand <= Heat
                                                                                     # heat generation by CHP + heat
                                                                                     #generation by boiler
     m += xsum(y_t[t][i] for i in I) + el_bought[t] == el_sold[t] + el_demand[
@@ -126,7 +129,8 @@ for t in T:
 
 status = m.optimize()
 obj = m.objective_value
-
+obj/100
+print("\n" + str(obj/100))
 status
 
 
@@ -151,14 +155,14 @@ if m.num_solutions:
 
 import matplotlib.pyplot as plt
 plt.rcParams["figure.figsize"] = (10,5)
-xx_data = [electricity_generation[:100], electricity_sold[:100], electricity_bought[:100], fuel_consumption_CHP[:100],
-           heat_generation_CHP[:100], fuel_consumption_boiler[:100], heat_generation_boiler[:100]]
-xx_label = ["electricity\_generation[:100]", "electricity\_sold[:100]", "electricity\_bought[:100]",
-            "fuel\_consumption\_CHP[:100]", "heat\_generation\_CHP[:100]","fuel\_consumption\_boiler[:100]",
-            "heat\_generation\_boiler[:100]"]
+xx_data = [electricity_generation[:300], electricity_sold[:300], electricity_bought[:300], fuel_consumption_CHP[:300],
+           heat_generation_CHP[:300], fuel_consumption_boiler[:300], heat_generation_boiler[:300]]
+xx_label = ["electricity\_generation", "electricity\_sold", "electricity\_bought",
+            "fuel\_consumption\_CHP", "heat\_generation\_CHP","fuel\_consumption\_boiler",
+            "heat\_generation\_boiler"]
 
 fig = plt.figure()
-fig.suptitle("CHP + Boiler with households price")
+fig.suptitle("Boiler with households price")
 ax = plt.subplot(111)
 
 
@@ -175,4 +179,24 @@ ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 plt.show()
 
 
+import matplotlib.pyplot as plt
+plt.rcParams["figure.figsize"] = (10,5)
+xx_data = [el_price[:300], gas_pp[:300], co2_p[:300]]
+xx_label = ["Electricity\_Price", "Gas\_price", "CO_2\_price"]
 
+fig = plt.figure()
+fig.suptitle("Price levels")
+ax = plt.subplot(111)
+
+
+for i,j in zip(xx_data,xx_label):
+    ax.plot(i, label='$%s$'%j)
+
+# Shrink current axis by 20%
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+# Put a legend to the right of the current axis
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+plt.show()
