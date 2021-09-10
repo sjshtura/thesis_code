@@ -48,7 +48,7 @@ heat_price = heat_price_1.stack().tolist()  # heat price
 heat_ratio = 400 / 385  # heat ratio
 eff_plants = elec_eff.stack().tolist()  # the efficiency of the power plants
 
-#heat_cap = (heat_cap*385)/20
+heat_cap = (heat_cap*385)/20
 capacity_ht_boiler = heat_cap.stack().tolist()
 
 eff_boiler = heat_eff.stack().tolist()
