@@ -130,7 +130,7 @@ for t in T:
 status = m.optimize()
 obj = m.objective_value
 obj/100
-print("\n" + str(obj/100))
+print("Objective value: \n" + str(obj/100))
 status
 
 
