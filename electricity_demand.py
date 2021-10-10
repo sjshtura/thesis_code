@@ -1,5 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 df_data = pd.read_excel("Representative Profile VDEW.xls", sheet_name = 'G0')
 df_data
@@ -24,14 +24,15 @@ df_winter = df_winter.resample('60T').mean()
 df_winter.index = df_winter.index.astype(str)
 df_winter.head()
 
-# fig = plt.figure(figsize=(20, 6), dpi=80)
-# fig.suptitle('Gewerbe Winter', fontsize=20)
-# plt.plot(df_winter["Samstag"], label = "Samstag")
-# plt.plot(df_winter["Sonntag"], label = "Sonntag")
-# plt.plot(df_winter["Werktag"], label = "Werktag")
-# plt.xticks(rotation=90)
-# plt.legend(loc='upper right')
-
+fig = plt.figure(figsize=(20, 7), dpi=80)
+fig.suptitle('Industry (Winter)', fontsize=20)
+plt.plot(df_winter["Samstag"], label = "Samstag")
+plt.plot(df_winter["Sonntag"], label = "Sonntag")
+plt.plot(df_winter["Werktag"], label = "Werktag")
+plt.xticks(rotation=90)
+plt.legend(loc='upper right')
+plt.show()
+plt.savefig('Industry (Winter).png')
 #df_winter.plot(figsize=(15, 4))
 
 df_data
@@ -47,13 +48,15 @@ df_sommer = df_sommer.resample('60T').mean()
 df_sommer.index = df_sommer.index.astype(str)
 df_sommer.head()
 
-# fig = plt.figure(figsize=(20, 6), dpi=80)
-# fig.suptitle('Gewerbe Sommer', fontsize=20)
-# plt.plot(df_sommer["Samstag"], label = "Samstag")
-# plt.plot(df_sommer["Sonntag"], label = "Sonntag")
-# plt.plot(df_sommer["Werktag"], label = "Werktag")
-# plt.xticks(rotation=90)
-# plt.legend(loc='upper right')
+fig = plt.figure(figsize=(20, 7), dpi=80)
+fig.suptitle('Industry (Summer)', fontsize=20)
+plt.plot(df_sommer["Samstag"], label = "Samstag")
+plt.plot(df_sommer["Sonntag"], label = "Sonntag")
+plt.plot(df_sommer["Werktag"], label = "Werktag")
+plt.xticks(rotation=90)
+plt.legend(loc='upper right')
+plt.show()
+plt.savefig('Industry (Summer).png')
 
 df_data
 df_ubergangszeit = df_data.iloc[:,6:9]
@@ -71,14 +74,15 @@ df_ubergangszeit.head()
 
 
 
-# fig = plt.figure(figsize=(20, 6), dpi=80)
-# fig.suptitle('Gewerbe Übergangszeit', fontsize=20)
-# plt.plot(df_ubergangszeit["Samstag"], label = "Samstag")
-# plt.plot(df_ubergangszeit["Sonntag"], label = "Sonntag")
-# plt.plot(df_ubergangszeit["Werktag"], label = "Werktag")
-# plt.xticks(rotation=90)
-# plt.legend(loc='upper right')
-
+fig = plt.figure(figsize=(20, 7), dpi=80)
+fig.suptitle('Industry (Transition Period)', fontsize=20)
+plt.plot(df_ubergangszeit["Samstag"], label = "Samstag")
+plt.plot(df_ubergangszeit["Sonntag"], label = "Sonntag")
+plt.plot(df_ubergangszeit["Werktag"], label = "Werktag")
+plt.xticks(rotation=90)
+plt.legend(loc='upper right')
+plt.show()
+plt.savefig('Industry (Transition Period).png')
 
 # https://stackoverflow.com/questions/47150709/how-to-create-a-calendar-table-date-dimension-in-pandas
 
@@ -96,7 +100,7 @@ def create_date_table(start='2020-01-01', end='2020-12-31'):
         i: name
         for i, name
         in enumerate(['Monday', 'Tuesday', 'Wednesday',
-                      'Thursday', 'Friday', 'Saturday', 
+                      'Thursday', 'Friday', 'Saturday',
                       'Sunday'])
     }
 
@@ -194,5 +198,7 @@ final_data_new.head()
 electricity_demand = final_data_new.set_index("Date")
 # electricity_demand
 # final_data.to_excel("Final_dataframe.xlsx")
+
+
 print("electricity demand\n")
 print(electricity_demand.head())

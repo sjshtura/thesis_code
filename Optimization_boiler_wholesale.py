@@ -50,7 +50,6 @@ eff_plants = elec_eff.stack().tolist()  # the efficiency of the power plants
 
 heat_cap = (heat_cap*385)/20
 capacity_ht_boiler = heat_cap.stack().tolist()
-
 eff_boiler = heat_eff.stack().tolist()
 
 T = range(8784)
@@ -58,7 +57,7 @@ T = range(8784)
 J = range(1)  # J: boiler in set of boilers J
 # K = range(1)  # k: CHP in set of CHP plants K
 
-I = range(1)  # CHP
+I = range(0)  # CHP
 
 m = Model("Maximizing profit", sense=maximize, solver_name=CBC)
 
@@ -78,6 +77,8 @@ z_tb = [[m.add_var(lb=0) for j in J] for t in T]  # Heat generation by Boiler
 # Max Proft = Revenue - Cost
 heat_demand_norm = [((element / max(heat_demand)) * 385) for element in heat_demand]
 heat_demand = heat_demand_norm
+
+
 
 print(len(co2_price))
 print(len(el_demand))
@@ -103,7 +104,7 @@ print(type(heat_demand_norm))
 print(type(el_price))
 
 m.objective = xsum(
-    el_price[t] * del_t * (el_sold[t] - el_bought[t]) - (x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
+    el_price[t] * del_t * (el_sold[t] - el_bought[t]) for t in T) - xsum((x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
     for i in I for t in T) - xsum((x_tb[t][j] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
                                   for j in J for t in T) + xsum((heat_demand[t] * heat_price[t]) for t in T)
 
@@ -111,15 +112,13 @@ m.objective = xsum(
 
 for t in T:
 
-    m += heat_demand[t] == xsum(z_t[t][i] for i in I) + xsum(z_tb[t][j] for j in J)  # heat demand <= Heat
-                                                                                    # heat generation by CHP + heat
-                                                                                    #generation by boiler
+    m += heat_demand[t] == xsum(z_t[t][i] for i in I) + xsum(z_tb[t][j] for j in J)  # heat demand >= Heat generation
     m += xsum(y_t[t][i] for i in I) + el_bought[t] == el_sold[t] + el_demand[
         t]  # electricity generation + bought electricity = sold electricity + electricity demand
 
     for j in J:
-        m += z_tb[t][j] <= capacity_ht_boiler[j]  # heat generation by boiler <= maximum capacity of heat of the plant
-        m += x_tb[t][j] == z_tb[t][j] / eff_boiler[j]  # fuel consumption by boiler= Heat generation by boiler / efficiency of the plants
+        m += z_tb[t][j] <= capacity_ht_boiler[j]  # heat generation <= maximum capacity of heat of the plant
+        m += x_tb[t][j] == z_tb[t][j] / eff_boiler[j]  # fuel consumption = Heat generation / efficiency of the plants
     for i in I:
         m += y_t[t][i] <= capacity_el[i]  # electricity generation <= maximum capacity of electricity of the plant
         m += z_t[t][i] <= capacity_ht[i]  # heat generation <= maximum capacity of heat of the plant
@@ -129,8 +128,9 @@ for t in T:
 
 status = m.optimize()
 obj = m.objective_value
-obj/100
+
 print("Objective value: \n" + str(obj/100))
+
 status
 
 
@@ -149,9 +149,9 @@ if m.num_solutions:
             electricity_generation.append(y_t[t][i].x)
             fuel_consumption_CHP.append(x_t[t][i].x)
             heat_generation_CHP.append(z_t[t][i].x)
-            fuel_consumption_boiler.append(x_tb[t][i].x)
-            heat_generation_boiler.append(z_tb[t][i].x)
-
+        for j in J:
+            fuel_consumption_boiler.append(x_tb[t][j].x)
+            heat_generation_boiler.append(z_tb[t][j].x)
 
 import matplotlib.pyplot as plt
 plt.rcParams["figure.figsize"] = (10,5)
@@ -162,7 +162,7 @@ xx_label = ["electricity\_generation", "electricity\_sold", "electricity\_bought
             "heat\_generation\_boiler"]
 
 fig = plt.figure()
-fig.suptitle("Boiler with wholesale price")
+fig.suptitle("CHP + Boiler with wholesale price")
 ax = plt.subplot(111)
 
 
@@ -177,6 +177,7 @@ ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 plt.show()
+
 
 
 import matplotlib.pyplot as plt

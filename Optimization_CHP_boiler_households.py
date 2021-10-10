@@ -101,9 +101,10 @@ print(type(heat_demand_norm))
 print(type(el_price))
 
 m.objective = xsum(
-    el_price[t] * del_t * (el_sold[t] - el_bought[t]) - (x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
+    el_price[t] * del_t * (el_sold[t] - el_bought[t]) for t in T) - xsum((x_t[t][i] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
     for i in I for t in T) - xsum((x_tb[t][j] * (gas_pp[t] * del_t + (em_fc * co2_p[t] * del_t)))
                                   for j in J for t in T) + xsum((heat_demand[t] * heat_price[t]) for t in T)
+
 
 # constraints
 
@@ -148,8 +149,9 @@ if m.num_solutions:
             electricity_generation.append(y_t[t][i].x)
             fuel_consumption_CHP.append(x_t[t][i].x)
             heat_generation_CHP.append(z_t[t][i].x)
-            fuel_consumption_boiler.append(x_tb[t][i].x)
-            heat_generation_boiler.append(z_tb[t][i].x)
+        for j in J:
+            fuel_consumption_boiler.append(x_tb[t][j].x)
+            heat_generation_boiler.append(z_tb[t][j].x)
 
 
 import matplotlib.pyplot as plt
